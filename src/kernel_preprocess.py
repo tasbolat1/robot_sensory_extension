@@ -74,7 +74,7 @@ tasks = {'handover':[0, 1, 2],
          'foodPoking':[-1]}
 
 handover_map = {'rod': 0, 'plate': 1, 'box': 2 }
-food_map = {'empty': 0, 'water': 1, 'toufu': 2, 'banana':3, 'watermelon':4, 'apple': 5, 'pepper': 6}
+food_map = {'empty': 0, 'water': 1, 'tofu': 2, 'banana':3, 'watermelon':4, 'apple': 5, 'pepper': 6}
 
  # check task 
 assert args.task in tasks.keys(), f'Task {args.task} is not found'

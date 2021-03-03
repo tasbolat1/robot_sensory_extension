@@ -108,7 +108,7 @@ class QuantizationLayer(nn.Module):
 
         #print('x:', x)
         #print('p:', p)
-        #p = (p+1)/2  # maps polarity to 0, 1
+        # p = (p+1)/2  # maps polarity to 0, 1
 
         idx_before_bins = x \
                           + 0 \

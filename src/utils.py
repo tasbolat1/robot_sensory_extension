@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from pathlib import Path
-
+import tqdm
 
 def read_spikes(file_path, time_zero=False, return_start=False):
     raw_df = pd.read_csv(file_path,names=['isPos', 'taxel', 'removable','t'], sep=' ',
@@ -30,7 +30,7 @@ def downsample_raw_spikes(df, frequency, max_frequency=4000):
     if frequency == max_frequency:
         return df
 
-    print(f'Downsampling at {max_frequency} ...')
+    print(f'Downsampling at {frequency} ...')
     
     last_spiked = {}
     for i in range(1, 81):
@@ -53,7 +53,7 @@ def prepare_rod_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, num_sp
     info = []
     count = 0
     trials=10
-    for trial in range(1, trials+1):
+    for trial in range(1, trials+1) :
         fname = f'trial{trial}_{tool_type}'
         df = read_spikes(data_dir / f'{fname}.tact')
         df = downsample_raw_spikes(df, frequency)
@@ -78,6 +78,7 @@ def prepare_handover_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, n
     df_estls = pd.read_csv(data_dir / 'nt_essentials.csv')
     df_estls = df_estls.fillna(-1)
     df_estls.obj = df_estls.obj.map(label_map)
+    df_estls = df_estls[df_estls.obj == tool_type]
     
     info = []
     count = 0
@@ -86,6 +87,7 @@ def prepare_handover_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, n
         if fname == 'neg_box_35':
             continue
         df = read_spikes(data_dir / f'{fname}.tact')
+        df = downsample_raw_spikes(df, frequency)
         contact_t = row.tapped_time
         sample_df = df[(df.t >= (contact_t-delay_t/1000)) & (df.t < (contact_t+feature_t/1000))]
         sample_values = sample_df[['taxel', 't', 'isPos']].values
@@ -107,6 +109,7 @@ def prepare_handover_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, n
 def prepare_food_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, num_splits=4, feature_t=250, delay_t=50, label_map=None):
     
     df_estls = pd.read_csv(data_dir / 'nt_essentials.csv', names=['old_dir', 't', 'obj'])
+    
     df_estls.obj = df_estls.obj.map(label_map)
     
     def refine_dir(x):
@@ -123,9 +126,11 @@ def prepare_food_raw_spikes(data_dir, save_dir, tool_type, frequency=4000, num_s
     for i, row in df_estls.iterrows():
         local_data_dir = Path(data_dir) / row.new_sub_dir
         df = read_spikes(local_data_dir)
+        df = downsample_raw_spikes(df, frequency)
         contact_t = row.t
         sample_df = df[(df.t >= (contact_t-delay_t/1000)) & (df.t < (contact_t+feature_t/1000))]
         sample_values = sample_df[['taxel', 't', 'isPos']].values
+        #print(row.obj)
 
         info.append([count, 0.0, row.obj, row.obj])
         sample_values = sample_df[['taxel', 't', 'isPos']].values

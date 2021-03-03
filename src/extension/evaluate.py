@@ -158,10 +158,10 @@ def _evaluate_tool_lstm(task, tool_type, freq, device):
     
     npzfile = np.load(f'../../data/kernel_features/kernel_{task}_{tool_type}_{freq}.npz')
     
-    X = torch.FloatTensor( npzfile['signals'] ).to(device)
-    y = torch.FloatTensor( npzfile['labels']*100 ).to(device)
-    #X = npzfile['signals']
-    #y = npzfile['labels']*100
+    #X = torch.FloatTensor( npzfile['signals'] ).to(device)
+    #y = torch.FloatTensor( npzfile['labels']*100 ).to(device)
+    X = npzfile['signals']
+    y = npzfile['labels']*100
     print('X shape:', X.shape)
     print('X max min:', X.max(), X.min())
     print('y shape:', y.shape)
@@ -175,7 +175,7 @@ def _evaluate_tool_lstm(task, tool_type, freq, device):
                                    module__input_dim=X.shape[-1],
                                    module__output_dim=1,
                                    optimizer=torch.optim.Adam,
-                                   optimizer__weight_decay=0.5,
+                                   optimizer__weight_decay=0.06,
                                    train_split=CVSplit(10),
                                    max_epochs=1000,
                                    device=device,
