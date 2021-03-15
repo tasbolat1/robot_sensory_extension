@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import torch
 from pathlib import Path
 import os
-from utils import prepare_rod_raw_spikes, prepare_handover_raw_spikes, prepare_food_raw_spikes
-from kernels import QuantizationLayer
-from dataset import RawTactileDataset, TacLoader
+from utils.utils import prepare_rod_raw_spikes, prepare_handover_raw_spikes, prepare_food_raw_spikes
+from utils.kernels import QuantizationLayer
+from utils.dataset import RawTactileDataset, TacLoader
 import torch.nn as nn
 import tqdm
 
@@ -130,7 +130,7 @@ print(f'Done with processing with raw spikes.')
 print(f'Preparing to create kernel features for object type {args.tool_type} in task {args.task}.')
 device = torch.device(args.device)
 model = QuantizationLayer((50,80), [1, 30, 30, 1],
-                          nn.LeakyReLU(negative_slope=0.1),learnt_kernel_dir='trilinear_init.pth').to(device)
+                          nn.LeakyReLU(negative_slope=0.1),learnt_kernel_dir='utils/trilinear_init.pth').to(device)
 model.eval()
 
 tactile_dataset = RawTactileDataset(str(raw_spikes_dir))
